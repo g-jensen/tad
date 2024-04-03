@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class Parser {
+public class Lexer {
   private static List<Character> separatorChars = new ArrayList<>(List.of(','));
   private static List<Character> operatorChars = new ArrayList<>(List.of(':','='));
   private static List<Character> valueChars = new ArrayList<>(List.of('{','('));
@@ -13,11 +13,11 @@ public class Parser {
       Character c = str.charAt(i);
       String parsed = new String();
       if (isValidSymbolChar(c)) {
-        parsed = parse(str,i,Parser::isValidSymbolChar);
+        parsed = parse(str,i,Lexer::isValidSymbolChar);
       } else if (isSeparatorChar(c)) {
         parsed = c.toString();
       } else if (isOperatorChar(c)) {
-        parsed = parse(str,i,Parser::isOperatorChar);
+        parsed = parse(str,i,Lexer::isOperatorChar);
       } else if (isValueChar(c)) {
         parsed = c.toString();
       } else {
