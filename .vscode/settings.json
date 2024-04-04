@@ -2,6 +2,10 @@
   "java.project.sourcePaths": [
     "lib",
     "src",
-    "test"
+    "src/Node",
+    "src/Value",
+    "test",
+    "test/Node",
+    "test/Value"
   ]
 }
