@@ -1,3 +1,6 @@
 public interface Node {
-  public Value evaluate();
+  @Override
+  public boolean equals(Object obj);
+  
+  public Value evaluate(); 
 }
