@@ -1,2 +1,7 @@
 src/*.class
+src/Node/*.class
+src/Value/*.class
 test/*.class
+test/Node/*.class
+test/Value/*.class
+build/*
