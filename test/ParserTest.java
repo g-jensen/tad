@@ -24,12 +24,12 @@ public class ParserTest {
 
   @Test
   public void singleNumberLiteralTokens() {
-    RootNode n = parser.generateAst(Lexer.getTokens("1"));
+    RootNode n = parser.generateAst(List.of("1"));
     Value v = new NumberValue(1);
     assertEquals(List.of(new ValueNode(v)), n.getChildren());
     assertEquals(v, n.evaluate());
     
-    n = parser.generateAst(Lexer.getTokens("0"));
+    n = parser.generateAst(List.of("0"));
     v = new NumberValue(0);
     assertEquals(List.of(new ValueNode(v)), n.getChildren());
     assertEquals(v, n.evaluate());
@@ -37,7 +37,7 @@ public class ParserTest {
 
   @Test
   public void multipleNumberLiteralTokens() {
-    RootNode n = parser.generateAst(Lexer.getTokens("1 2"));
+    RootNode n = parser.generateAst(List.of("1","2"));
     ValueNode n0 = new ValueNode(new NumberValue(0));
     ValueNode n1 = new ValueNode(new NumberValue(1));
     ValueNode n2 = new ValueNode(new NumberValue(2));
@@ -45,11 +45,15 @@ public class ParserTest {
     assertEquals(List.of(n1, n2), n.getChildren());
     assertEquals(new NumberValue(2), n.evaluate());
 
-    n = parser.generateAst(Lexer.getTokens("0 1 3"));
+    n = parser.generateAst(List.of("0","1","3"));
     assertEquals(List.of(n0, n1, n3), n.getChildren());
     assertEquals(new NumberValue(3), n.evaluate());
   }
 
-  // @Test
-  // public void 
+  @Test
+  public void emptySetLiteralTokens() {
+    RootNode n = parser.generateAst(List.of("{","}"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of()), n.getChildren().get(0).evaluate());
+  }
 }
