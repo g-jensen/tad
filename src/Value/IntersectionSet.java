@@ -1,8 +1,8 @@
-public class Intersection implements Collection {
+public class IntersectionSet implements Set {
   private Collection c1;
   private Collection c2;
 
-  public Intersection(Collection c1, Collection c2) {
+  public IntersectionSet(Collection c1, Collection c2) {
     this.c1 = c1;
     this.c2 = c2;
   }
