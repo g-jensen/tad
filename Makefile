@@ -12,7 +12,7 @@ test: compile
 test-auto: compile
 	find . -name '*.java' | entr make test
 
-compile:
+compile: clean
 	javac -cp $(CLASSPATH) $(SOURCE_FILES) $(TEST_FILES) -d build
 
 
