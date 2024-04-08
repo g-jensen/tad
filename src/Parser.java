@@ -26,15 +26,39 @@ public class Parser {
 
   private ParsedResult parseExpression(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
-    Node n = null;
-    List<String> parsedTokens = null;
     if (isInteger(token)) {
-      n = new ValueNode(new NumberValue(Integer.parseInt(token)));
-      parsedTokens = List.of(token);
+      return parseInteger(tokens, tokensIndex);
+    } else if (token.equals("{")) {
+      return parseSet(tokens, tokensIndex);
     } else {
-      n = new ValueNode(new FiniteSet(java.util.Set.of()));
-      parsedTokens = List.of(token,tokens.get(tokensIndex+1));
+      ParsedResult pr = parseExpression(tokens, tokensIndex+1);
+      List<String> parsedTokens = new ArrayList<>(pr.tokens);
+      parsedTokens.add(0,token);
+      pr.tokens = parsedTokens;
+      return pr;
     }
+  }
+
+  private ParsedResult parseInteger(List<String> tokens, int tokensIndex) {
+    String token = tokens.get(tokensIndex);
+    Node n = new ValueNode(new NumberValue(Integer.parseInt(token)));
+    List<String> parsedTokens = List.of(token);
     return new ParsedResult(n, parsedTokens);
+  }
+
+  private ParsedResult parseSet(List<String> tokens, int tokensIndex) {
+    String token = tokens.get(tokensIndex);
+    FiniteSetNode node = new FiniteSetNode();
+    List<String> parsedTokens = new ArrayList<>(List.of(token));
+    tokensIndex++;
+    while (tokensIndex < tokens.size() &&
+          !tokens.get(tokensIndex).equals("}")) {
+      ParsedResult pr = parseExpression(tokens,tokensIndex);
+      parsedTokens.addAll(pr.tokens);
+      node.addNode(pr.node);
+      tokensIndex += pr.tokens.size();
+    }
+    parsedTokens.add("}");
+    return new ParsedResult(node, parsedTokens);
   }
 }

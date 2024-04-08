@@ -22,6 +22,7 @@ public class NumberValueTest {
     Value v = new NumberValue(0);
     assertEquals(v,v);
     assertEquals(new NumberValue(0), new NumberValue(0));
+    assertEquals(new NumberValue(1), new NumberValue(1));
     assertNotEquals(new NumberValue(5), new NumberValue(0));
     assertNotEquals(new NumberValue(5), new Object());
   }

@@ -54,6 +54,55 @@ public class ParserTest {
   public void emptySetLiteralTokens() {
     RootNode n = parser.generateAst(List.of("{","}"));
     assertEquals(1, n.getChildren().size());
-    assertEquals(new FiniteSet(java.util.Set.of()), n.getChildren().get(0).evaluate());
+    assertEquals(new FiniteSet(java.util.Set.of()), n.evaluate());
+  }
+
+  @Test
+  public void populatedSetLiteralOfNumbersTokens() {
+    RootNode n = parser.generateAst(List.of("{","1","}"));
+    NumberValue n1 = new NumberValue(1);
+    NumberValue n2 = new NumberValue(2);
+    NumberValue n3 = new NumberValue(3);
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of(n1)), n.evaluate());
+
+    n = parser.generateAst(List.of("{","1",",","2","}"));
+    assertEquals(1, n.getChildren().size()); 
+    assertEquals(new FiniteSet(java.util.Set.of(n1, n2)),n.evaluate());
+
+    n = parser.generateAst(List.of("{","1",",","2",",","3","}"));
+    assertEquals(1, n.getChildren().size()); 
+    assertEquals(new FiniteSet(java.util.Set.of(n1, n2, n3)),n.evaluate());
+
+    n = parser.generateAst(List.of("{","1",",","2",",","1","}"));
+    assertEquals(1, n.getChildren().size()); 
+    assertEquals(new FiniteSet(java.util.Set.of(n1, n2)),n.evaluate());
+  }
+
+  @Test
+  public void populatedSetLiteralWithNestedSetTokens() {
+    RootNode n = parser.generateAst(List.of("{","{","}","}"));
+    NumberValue n1 = new NumberValue(1);
+    NumberValue n2 = new NumberValue(2);
+    FiniteSet s1 = new FiniteSet(java.util.Set.of(n1));
+    FiniteSet s2 = new FiniteSet(java.util.Set.of(n2));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of(new FiniteSet(java.util.Set.of()))), n.evaluate());
+  
+    n = parser.generateAst(List.of("{","{","1","}","}"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of(s1)), n.evaluate());
+
+    n = parser.generateAst(List.of("{","{","1","}",",","2","}"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of(s1, n2)), n.evaluate());
+
+    n = parser.generateAst(List.of("{","2",",","{","1","}","}"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of(s1, n2)), n.evaluate());
+
+    n = parser.generateAst(List.of("{","{","1","}"," ","{","2","}","}"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new FiniteSet(java.util.Set.of(s1, s2)), n.evaluate());
   }
 }
