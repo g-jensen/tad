@@ -4,7 +4,7 @@ import java.util.function.Predicate;
 
 public class Lexer {
   private static List<Character> separatorChars = new ArrayList<>(List.of(','));
-  private static List<Character> operatorChars = new ArrayList<>(List.of(':','='));
+  private static List<Character> operatorChars = new ArrayList<>(List.of(':','=','&'));
   private static List<Character> valueChars = new ArrayList<>(List.of('{','('));
 
   public static List<String> getTokens(String str) {

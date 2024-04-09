@@ -95,20 +95,20 @@ public class LexerTest {
 
   @Test
   public void getsTokensOfFilterSet() {
-    List<String> tokens = Lexer.getTokens("A{}");
-    assertEquals(List.of("A","{","}"), tokens);
+    List<String> tokens = Lexer.getTokens("A&");
+    assertEquals(List.of("A","&"), tokens);
 
-    tokens = Lexer.getTokens("Abc{f}");
-    assertEquals(List.of("Abc","{","f","}"), tokens);
+    tokens = Lexer.getTokens("Abc&f");
+    assertEquals(List.of("Abc","&","f"), tokens);
 
-    tokens = Lexer.getTokens("A{even?}");
-    assertEquals(List.of("A","{","even?","}"), tokens);
+    tokens = Lexer.getTokens("A & even?");
+    assertEquals(List.of("A","&","even?"), tokens);
 
-    tokens = Lexer.getTokens("ABC-?{even?}");
-    assertEquals(List.of("ABC-?","{","even?","}"), tokens);
+    tokens = Lexer.getTokens("ABC-?&even?");
+    assertEquals(List.of("ABC-?","&","even?"), tokens);
 
-    tokens = Lexer.getTokens("{1,2,3}{even?}");
-    assertEquals(List.of("{","1",",","2",",","3","}","{","even?","}"), tokens);
+    tokens = Lexer.getTokens("{1,2,3} & even?");
+    assertEquals(List.of("{","1",",","2",",","3","}","&","even?"), tokens);
   }
 
   @Test
@@ -135,7 +135,7 @@ public class LexerTest {
   @Test
   public void getsTokensOfFunctionMapNotation() {
     List<String> tokens = Lexer.getTokens("A:{}");
-    assertEquals(List.of("A",":","{","}"), tokens);
+    assertEquals(List.of("A",":","{","}"), tokens); 
 
     tokens = Lexer.getTokens("not: {true: false}");
     assertEquals(List.of("not",":","{","true",":","false","}"), tokens);
@@ -167,8 +167,14 @@ public class LexerTest {
     List<String> tokens = Lexer.getTokens("A()");
     assertEquals(List.of("A","(",")"), tokens);
 
+    tokens = Lexer.getTokens("A{}");
+    assertEquals(List.of("A","{","}"), tokens);
+
     tokens = Lexer.getTokens("A(B)");
     assertEquals(List.of("A","(","B",")"), tokens);
+
+    tokens = Lexer.getTokens("A{B}");
+    assertEquals(List.of("A","{","B","}"), tokens);
 
     tokens = Lexer.getTokens("A(B,C)");
     assertEquals(List.of("A","(","B",",","C",")"), tokens);
