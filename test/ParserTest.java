@@ -81,7 +81,7 @@ public class ParserTest {
   }
 
   @Test
-  public void populatedSetLiteralWithNestedSetTokens() {
+  public void populatedSetLiteralWithNestTokens() {
     RootNode n = parser.generateAst(List.of("{","{","}","}"));
     NumberValue n1 = new NumberValue(1);
     NumberValue n2 = new NumberValue(2);
@@ -112,5 +112,54 @@ public class ParserTest {
     RootNode n = parser.generateAst(List.of("(",")"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new Tuple(List.of()), n.evaluate());
+  }
+
+  @Test
+  public void populatedTupleLiteralOfNumbersTokens() {
+    RootNode n = parser.generateAst(List.of("(","1",")"));
+    NumberValue n1 = new NumberValue(1);
+    NumberValue n2 = new NumberValue(2);
+    NumberValue n3 = new NumberValue(3);
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(n1)), n.evaluate());
+
+    n = parser.generateAst(List.of("(","1",",","2",")"));
+    assertEquals(1, n.getChildren().size()); 
+    assertEquals(new Tuple(List.of(n1, n2)),n.evaluate());
+
+    n = parser.generateAst(List.of("(","1",",","2",",","3",")"));
+    assertEquals(1, n.getChildren().size()); 
+    assertEquals(new Tuple(List.of(n1, n2, n3)),n.evaluate());
+
+    n = parser.generateAst(List.of("(","1",",","2",",","1",")"));
+    assertEquals(1, n.getChildren().size()); 
+    assertEquals(new Tuple(List.of(n1, n2)),n.evaluate());
+  }
+
+  @Test
+  public void populatedTupleLiteralWithNestTokens() {
+    RootNode n = parser.generateAst(List.of("(","(",")",")"));
+    NumberValue n1 = new NumberValue(1);
+    NumberValue n2 = new NumberValue(2);
+    Tuple t1 = new Tuple(List.of(n1));
+    Tuple t2 = new Tuple(List.of(n2));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(new Tuple(List.of()))), n.evaluate());
+  
+    n = parser.generateAst(List.of("(","(","1",")",")"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(t1)), n.evaluate());
+
+    n = parser.generateAst(List.of("(","(","1",")",",","2",")"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(t1, n2)), n.evaluate());
+
+    n = parser.generateAst(List.of("(","2",",","(","1",")",")"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(t1, n2)), n.evaluate());
+
+    n = parser.generateAst(List.of("(","(","1",")","(","2",")",")"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(t1, t2)), n.evaluate());
   }
 }
