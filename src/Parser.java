@@ -28,8 +28,8 @@ public class Parser {
     String token = tokens.get(tokensIndex);
     if (isInteger(token)) {
       return parseInteger(tokens, tokensIndex);
-    } else if (token.equals("{")) {
-      return parseSet(tokens, tokensIndex);
+    } else if (token.equals("{") || token.equals("(")) {
+      return parseLiteralCollection(tokens, tokensIndex);
     } else {
       ParsedResult pr = parseExpression(tokens, tokensIndex+1);
       List<String> parsedTokens = new ArrayList<>(pr.tokens);
@@ -46,19 +46,20 @@ public class Parser {
     return new ParsedResult(n, parsedTokens);
   }
 
-  private ParsedResult parseSet(List<String> tokens, int tokensIndex) {
+  private ParsedResult parseLiteralCollection(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
-    FiniteSetNode node = new FiniteSetNode();
+    String endingToken = token.equals("{") ? "}" : ")";
+    ListNode node = token.equals("{") ? new FiniteSetNode() : new TupleNode();
     List<String> parsedTokens = new ArrayList<>(List.of(token));
     tokensIndex++;
     while (tokensIndex < tokens.size() &&
-          !tokens.get(tokensIndex).equals("}")) {
+          !tokens.get(tokensIndex).equals(endingToken)) {
       ParsedResult pr = parseExpression(tokens,tokensIndex);
       parsedTokens.addAll(pr.tokens);
       node.addNode(pr.node);
       tokensIndex += pr.tokens.size();
     }
-    parsedTokens.add("}");
+    parsedTokens.add(endingToken);
     return new ParsedResult(node, parsedTokens);
   }
 }

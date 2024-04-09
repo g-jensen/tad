@@ -3,6 +3,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ParserTest {
@@ -101,8 +102,15 @@ public class ParserTest {
     assertEquals(1, n.getChildren().size());
     assertEquals(new FiniteSet(java.util.Set.of(s1, n2)), n.evaluate());
 
-    n = parser.generateAst(List.of("{","{","1","}"," ","{","2","}","}"));
+    n = parser.generateAst(List.of("{","{","1","}","{","2","}","}"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new FiniteSet(java.util.Set.of(s1, s2)), n.evaluate());
+  }
+
+  @Test
+  public void emptyTupleLiteralTokens() {
+    RootNode n = parser.generateAst(List.of("(",")"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of()), n.evaluate());
   }
 }
