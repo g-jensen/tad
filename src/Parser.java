@@ -24,12 +24,23 @@ public class Parser {
     }
   }
 
+  private boolean isSymbol(String token) {
+    for (char c : token.toCharArray()) {
+      if (!Lexer.isValidSymbolChar(c)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private ParsedResult parseExpression(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
     if (isInteger(token)) {
       return parseInteger(tokens, tokensIndex);
     } else if (token.equals("{") || token.equals("(")) {
       return parseLiteralCollection(tokens, tokensIndex);
+    } else if (isSymbol(token)) {
+      return new ParsedResult(new SymbolNode(token), List.of(token));
     } else {
       ParsedResult pr = parseExpression(tokens, tokensIndex+1);
       List<String> parsedTokens = new ArrayList<>(pr.tokens);
