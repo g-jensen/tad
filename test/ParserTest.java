@@ -1,4 +1,5 @@
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public class ParserTest {
   }
 
   @Test
-  public void singleNumberLiteralTokens() {
+  public void singleNumberLiteral() {
     RootNode n = parser.generateAst(List.of("1"));
     Value v = new NumberValue(1);
     assertEquals(List.of(new ValueNode(v)), n.getChildren());
@@ -39,7 +40,7 @@ public class ParserTest {
   }
 
   @Test
-  public void multipleNumberLiteralTokens() {
+  public void multipleNumberLiteral() {
     RootNode n = parser.generateAst(List.of("1","2"));
     ValueNode n0 = new ValueNode(new NumberValue(0));
     ValueNode n1 = new ValueNode(new NumberValue(1));
@@ -54,14 +55,14 @@ public class ParserTest {
   }
 
   @Test
-  public void emptySetLiteralTokens() {
+  public void emptySetLiteral() {
     RootNode n = parser.generateAst(List.of("{","}"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new FiniteSet(java.util.Set.of()), n.evaluate(Map.of()));
   }
 
   @Test
-  public void populatedSetLiteralOfNumbersTokens() {
+  public void populatedSetLiteralOfNumbers() {
     RootNode n = parser.generateAst(List.of("{","1","}"));
     NumberValue n1 = new NumberValue(1);
     NumberValue n2 = new NumberValue(2);
@@ -83,7 +84,7 @@ public class ParserTest {
   }
 
   @Test
-  public void populatedSetLiteralWithNestTokens() {
+  public void populatedSetLiteralWithNest() {
     RootNode n = parser.generateAst(List.of("{","{","}","}"));
     NumberValue n1 = new NumberValue(1);
     NumberValue n2 = new NumberValue(2);
@@ -110,14 +111,14 @@ public class ParserTest {
   }
 
   @Test
-  public void emptyTupleLiteralTokens() {
+  public void emptyTupleLiteral() {
     RootNode n = parser.generateAst(List.of("(",")"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new Tuple(List.of()), n.evaluate(Map.of()));
   }
 
   @Test
-  public void populatedTupleLiteralOfNumbersTokens() {
+  public void populatedTupleLiteralOfNumbers() {
     RootNode n = parser.generateAst(List.of("(","1",")"));
     NumberValue n1 = new NumberValue(1);
     NumberValue n2 = new NumberValue(2);
@@ -139,7 +140,7 @@ public class ParserTest {
   }
 
   @Test
-  public void populatedTupleLiteralWithNestTokens() {
+  public void populatedTupleLiteralWithNest() {
     RootNode n = parser.generateAst(List.of("(","(",")",")"));
     NumberValue n1 = new NumberValue(1);
     NumberValue n2 = new NumberValue(2);
@@ -166,21 +167,21 @@ public class ParserTest {
   }
 
   @Test
-  public void dereferenceUndefinedSymbolTokens() {
+  public void dereferenceUndefinedSymbol() {
     RootNode n = parser.generateAst(List.of("a"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new NullValue(), n.evaluate(Map.of()));
   }
 
   @Test
-  public void dereferenceDefinedSymbolTokens() {
+  public void dereferenceDefinedSymbol() {
     RootNode n = parser.generateAst(List.of("b"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new NumberValue(1), n.evaluate(Map.of("b",new NumberValue(1))));
   }
 
   @Test
-  public void defineSymbolTokens() {
+  public void defineSymbol() {
     Map<String,Value> scope = new HashMap<>();
     RootNode n = parser.generateAst(List.of("b",":=","4"));
     assertEquals(1, n.getChildren().size());

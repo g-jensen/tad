@@ -3,6 +3,11 @@ import java.util.List;
 
 public class Parser {
   // syntax errors
+  private String assignmentOperator = ":=";
+  private String startSetToken = "{";
+  private String endSetToken = "}";
+  private String startTupleToken = "(";
+  private String endTupleToken = ")";
 
   public RootNode generateAst(List<String> tokens) {
     RootNode root = new RootNode();
@@ -37,7 +42,7 @@ public class Parser {
     String token = tokens.get(tokensIndex);
     if (isInteger(token)) {
       return parseInteger(tokens, tokensIndex);
-    } else if (token.equals("{") || token.equals("(")) {
+    } else if (token.equals(startSetToken) || token.equals(startTupleToken)) {
       return parseLiteralCollection(tokens, tokensIndex);
     } else if (isSymbol(token)) {
       return parseSymbol(tokens, tokensIndex);
@@ -53,7 +58,7 @@ public class Parser {
   private ParsedResult parseAssignment(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
     ParsedResult pr = parseExpression(tokens, tokensIndex+2);
-    List<String> parsedTokens = new ArrayList<>(List.of(token,":="));
+    List<String> parsedTokens = new ArrayList<>(List.of(token,assignmentOperator));
     parsedTokens.addAll(pr.tokens);
     return new ParsedResult(new AssignmentNode(token, pr.node), parsedTokens);
   }
@@ -61,7 +66,7 @@ public class Parser {
   private ParsedResult parseSymbol(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
     if (tokensIndex+1 < tokens.size() && 
-        tokens.get(tokensIndex+1).equals(":=")) {
+        tokens.get(tokensIndex+1).equals(assignmentOperator)) {
       return parseAssignment(tokens, tokensIndex);
     }
     return new ParsedResult(new SymbolNode(token), List.of(token));
@@ -76,8 +81,8 @@ public class Parser {
 
   private ParsedResult parseLiteralCollection(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
-    String endingToken = token.equals("{") ? "}" : ")";
-    ListNode node = token.equals("{") ? new FiniteSetNode() : new TupleNode();
+    String endingToken = token.equals(startSetToken) ? endSetToken : endTupleToken;
+    ListNode node = token.equals(startSetToken) ? new FiniteSetNode() : new TupleNode();
     List<String> parsedTokens = new ArrayList<>(List.of(token));
     tokensIndex++;
     while (!tokens.get(tokensIndex).equals(endingToken)) {
