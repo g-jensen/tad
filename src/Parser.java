@@ -40,6 +40,12 @@ public class Parser {
     } else if (token.equals("{") || token.equals("(")) {
       return parseLiteralCollection(tokens, tokensIndex);
     } else if (isSymbol(token)) {
+      if (tokensIndex+1 < tokens.size() && tokens.get(tokensIndex+1).equals(":=")) {
+        ParsedResult pr = parseExpression(tokens, tokensIndex+2);
+        List<String> parsedTokens = new ArrayList<>(List.of(token,":="));
+        parsedTokens.addAll(pr.tokens);
+        return new ParsedResult(new AssignmentNode(token, pr.node), parsedTokens);
+      }
       return new ParsedResult(new SymbolNode(token), List.of(token));
     } else {
       ParsedResult pr = parseExpression(tokens, tokensIndex+1);

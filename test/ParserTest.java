@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -176,5 +177,19 @@ public class ParserTest {
     RootNode n = parser.generateAst(List.of("b"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new NumberValue(1), n.evaluate(Map.of("b",new NumberValue(1))));
+  }
+
+  @Test
+  public void defineSymbolTokens() {
+    Map<String,Value> scope = new HashMap<>();
+    RootNode n = parser.generateAst(List.of("b",":=","4"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new NumberValue(4), n.evaluate(scope));
+    assertEquals(new NumberValue(4), scope.get("b"));
+
+    n = parser.generateAst(List.of("c",":=","(","1",")"));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new Tuple(List.of(new NumberValue(1))), n.evaluate(scope));
+    assertEquals(new Tuple(List.of(new NumberValue(1))), scope.get("c"));
   }
 }
