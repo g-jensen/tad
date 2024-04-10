@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RootNode extends Node {
   private List<Node> children;
@@ -16,10 +17,10 @@ public class RootNode extends Node {
     children.add(n);
   }
 
-  public Value evaluate() {
+  public Value evaluate(Map<String,Value> scope) {
     Value lastValue = new NullValue();
     for (Node n : children) {
-      lastValue = n.evaluate();
+      lastValue = n.evaluate(scope);
     }
     return lastValue;
   }

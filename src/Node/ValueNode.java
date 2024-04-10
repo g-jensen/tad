@@ -1,3 +1,5 @@
+import java.util.Map;
+
 public class ValueNode extends Node {
   private Value value;
 
@@ -5,7 +7,7 @@ public class ValueNode extends Node {
     this.value = value;
   }
 
-  public Value evaluate() {
+  public Value evaluate(Map<String,Value> scope) {
     return value;
   }
 }

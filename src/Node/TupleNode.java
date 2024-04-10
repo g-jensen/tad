@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TupleNode extends ListNode {
   private List<Node> nodes;
@@ -12,10 +13,10 @@ public class TupleNode extends ListNode {
     nodes.add(n);
   }
 
-  public Value evaluate() {
+  public Value evaluate(Map<String,Value> scope) {
     List<Value> values = new ArrayList<>();
     for (Node n : nodes) {
-      values.add(n.evaluate());
+      values.add(n.evaluate(scope));
     }
     return new Tuple(values);
   }
