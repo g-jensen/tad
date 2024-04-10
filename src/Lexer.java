@@ -57,7 +57,7 @@ public class Lexer {
     return  c == '-' || Character.isDigit(c);
   }
 
-  private static boolean isValidSymbolChar(Character c) {
+  public static boolean isValidSymbolChar(Character c) {
     return Character.isAlphabetic(c) || isPartOfNumber(c) || c == '_' || c == '?';
   }
 }
