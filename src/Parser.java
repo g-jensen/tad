@@ -40,13 +40,7 @@ public class Parser {
     } else if (token.equals("{") || token.equals("(")) {
       return parseLiteralCollection(tokens, tokensIndex);
     } else if (isSymbol(token)) {
-      if (tokensIndex+1 < tokens.size() && tokens.get(tokensIndex+1).equals(":=")) {
-        ParsedResult pr = parseExpression(tokens, tokensIndex+2);
-        List<String> parsedTokens = new ArrayList<>(List.of(token,":="));
-        parsedTokens.addAll(pr.tokens);
-        return new ParsedResult(new AssignmentNode(token, pr.node), parsedTokens);
-      }
-      return new ParsedResult(new SymbolNode(token), List.of(token));
+      return parseSymbol(tokens, tokensIndex);
     } else {
       ParsedResult pr = parseExpression(tokens, tokensIndex+1);
       List<String> parsedTokens = new ArrayList<>(pr.tokens);
@@ -54,6 +48,23 @@ public class Parser {
       pr.tokens = parsedTokens;
       return pr;
     }
+  }
+
+  private ParsedResult parseAssignment(List<String> tokens, int tokensIndex) {
+    String token = tokens.get(tokensIndex);
+    ParsedResult pr = parseExpression(tokens, tokensIndex+2);
+    List<String> parsedTokens = new ArrayList<>(List.of(token,":="));
+    parsedTokens.addAll(pr.tokens);
+    return new ParsedResult(new AssignmentNode(token, pr.node), parsedTokens);
+  }
+
+  private ParsedResult parseSymbol(List<String> tokens, int tokensIndex) {
+    String token = tokens.get(tokensIndex);
+    if (tokensIndex+1 < tokens.size() && 
+        tokens.get(tokensIndex+1).equals(":=")) {
+      return parseAssignment(tokens, tokensIndex);
+    }
+    return new ParsedResult(new SymbolNode(token), List.of(token));
   }
 
   private ParsedResult parseInteger(List<String> tokens, int tokensIndex) {
