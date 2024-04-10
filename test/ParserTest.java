@@ -187,9 +187,9 @@ public class ParserTest {
     assertEquals(new NumberValue(4), n.evaluate(scope));
     assertEquals(new NumberValue(4), scope.get("b"));
 
-    n = parser.generateAst(List.of("c",":=","(","1",")"));
+    n = parser.generateAst(List.of("b",":=","(","1",")"));
     assertEquals(1, n.getChildren().size());
     assertEquals(new Tuple(List.of(new NumberValue(1))), n.evaluate(scope));
-    assertEquals(new Tuple(List.of(new NumberValue(1))), scope.get("c"));
+    assertEquals(new Tuple(List.of(new NumberValue(1))), scope.get("b"));
   }
 }
