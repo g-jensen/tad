@@ -80,8 +80,7 @@ public class Parser {
     ListNode node = token.equals("{") ? new FiniteSetNode() : new TupleNode();
     List<String> parsedTokens = new ArrayList<>(List.of(token));
     tokensIndex++;
-    while (tokensIndex < tokens.size() &&
-          !tokens.get(tokensIndex).equals(endingToken)) {
+    while (!tokens.get(tokensIndex).equals(endingToken)) {
       ParsedResult pr = parseExpression(tokens,tokensIndex);
       parsedTokens.addAll(pr.tokens);
       node.addNode(pr.node);
