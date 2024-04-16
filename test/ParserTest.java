@@ -193,4 +193,35 @@ public class ParserTest {
     assertEquals(new Tuple(List.of(new NumberValue(1))), n.evaluate(scope));
     assertEquals(new Tuple(List.of(new NumberValue(1))), scope.get("b"));
   }
+
+  @Test
+  public void defineEmptyMapFunction() {
+    Map<String,Value> scope = new HashMap<>();
+    RootNode n = parser.generateAst((List.of("a",":","{","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NullValue(), f.call(List.of(),scope));
+    assertEquals(f, scope.get("a"));
+  }
+
+  @Test
+  public void defineSingleEntryMapFunction() {
+    Map<String,Value> scope = new HashMap<>();
+    RootNode n = parser.generateAst((List.of("a",":","{","1",":","2","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NumberValue(2), f.call(List.of(new NumberValue(1)),scope));
+    assertEquals(f, scope.get("a"));
+  }
+
+  @Test
+  public void defineMultiEntryMapFunction() {
+    Map<String,Value> scope = new HashMap<>(Map.of("c",new NumberValue(2)));
+    RootNode n = parser.generateAst((List.of("b",":","{","3",":","9",",","c",":","4","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NumberValue(9), f.call(List.of(new NumberValue(3)),scope));
+    assertEquals(new NumberValue(4), f.call(List.of(new NumberValue(2)),scope));
+    assertEquals(f, scope.get("b"));
+  }
 }

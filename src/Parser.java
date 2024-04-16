@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Parser {
   // syntax errors
@@ -13,7 +14,7 @@ public class Parser {
     RootNode root = new RootNode();
     if (tokens == null || tokens.isEmpty()) return root;
     for (int i = 0; i < tokens.size();) {
-      ParsedResult pr = parseExpression(tokens,i);
+      ParsedResult pr = parseExpression(tokens,i,false);
       root.add(pr.node);
       i += pr.tokens.size();
     }
@@ -38,16 +39,16 @@ public class Parser {
     return true;
   }
 
-  private ParsedResult parseExpression(List<String> tokens, int tokensIndex) {
+  private ParsedResult parseExpression(List<String> tokens, int tokensIndex, boolean inMap) {
     String token = tokens.get(tokensIndex);
     if (isInteger(token)) {
       return parseInteger(tokens, tokensIndex);
     } else if (token.equals(startSetToken) || token.equals(startTupleToken)) {
       return parseLiteralCollection(tokens, tokensIndex);
     } else if (isSymbol(token)) {
-      return parseSymbol(tokens, tokensIndex);
+      return parseSymbol(tokens, tokensIndex,inMap);
     } else {
-      ParsedResult pr = parseExpression(tokens, tokensIndex+1);
+      ParsedResult pr = parseExpression(tokens, tokensIndex+1,inMap);
       List<String> parsedTokens = new ArrayList<>(pr.tokens);
       parsedTokens.add(0,token);
       pr.tokens = parsedTokens;
@@ -57,19 +58,41 @@ public class Parser {
 
   private ParsedResult parseAssignment(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
-    ParsedResult pr = parseExpression(tokens, tokensIndex+2);
+    ParsedResult pr = parseExpression(tokens, tokensIndex+2,false);
     List<String> parsedTokens = new ArrayList<>(List.of(token,assignmentOperator));
     parsedTokens.addAll(pr.tokens);
     return new ParsedResult(new AssignmentNode(token, pr.node), parsedTokens);
   }
 
-  private ParsedResult parseSymbol(List<String> tokens, int tokensIndex) {
+  private ParsedResult parseFunction(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
-    if (tokensIndex+1 < tokens.size() && 
-        tokens.get(tokensIndex+1).equals(assignmentOperator)) {
-      return parseAssignment(tokens, tokensIndex);
+    MapFunction function = new MapFunction();
+    List<String> parsedTokens = new ArrayList<>(tokens.subList(tokensIndex, tokensIndex+3));
+    tokensIndex += 3;
+    while (!tokens.get(tokensIndex).equals(endSetToken)) {
+      ParsedResult key = parseExpression(tokens, tokensIndex, true);
+      tokensIndex += key.tokens.size();
+      ParsedResult value = parseExpression(tokens, tokensIndex, true);
+      tokensIndex += value.tokens.size();
+      parsedTokens.addAll(key.tokens);
+      parsedTokens.addAll(value.tokens);
+      function.put(key.node, value.node);
     }
-    return new ParsedResult(new SymbolNode(token), List.of(token));
+    parsedTokens.add(tokens.get(tokensIndex));
+    return new ParsedResult(new FunctionNode(token, function), parsedTokens);
+  }
+
+  private ParsedResult parseSymbol(List<String> tokens, int tokensIndex, boolean inMap) {
+    String token = tokens.get(tokensIndex);
+    if (inMap || tokensIndex+1 >= tokens.size()) {
+      return new ParsedResult(new SymbolNode(token), List.of(token));
+    }
+    String nextToken = tokens.get(tokensIndex+1);
+    if (nextToken.equals(assignmentOperator)) {
+      return parseAssignment(tokens, tokensIndex);
+    } else {
+      return parseFunction(tokens, tokensIndex);
+    }
   }
 
   private ParsedResult parseInteger(List<String> tokens, int tokensIndex) {
@@ -86,7 +109,7 @@ public class Parser {
     List<String> parsedTokens = new ArrayList<>(List.of(token));
     tokensIndex++;
     while (!tokens.get(tokensIndex).equals(endingToken)) {
-      ParsedResult pr = parseExpression(tokens,tokensIndex);
+      ParsedResult pr = parseExpression(tokens,tokensIndex,false);
       parsedTokens.addAll(pr.tokens);
       node.addNode(pr.node);
       tokensIndex += pr.tokens.size();
