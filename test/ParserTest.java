@@ -264,4 +264,24 @@ public class ParserTest {
     assertEquals(new NumberValue(3), f.call(List.of(new NumberValue(3)),scope));
     assertEquals(f, scope.get("a"));
   }
+
+  @Test
+  public void functionCallNoParams() {
+    RootNode root = new RootNode();
+    root.add(new ValueNode(new NumberValue(5)));
+    Map<String,Value> scope = new HashMap<>(Map.of("greg", new ExpressionFunction(List.of(),root)));
+    RootNode n = parser.generateAst((List.of("greg","(",")")));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new NumberValue(5), n.evaluate(scope));
+  }
+
+  @Test
+  public void functionCallWithParams() {
+    RootNode root = new RootNode();
+    root.add(new SymbolNode("a"));
+    Map<String,Value> scope = new HashMap<>(Map.of("greg", new ExpressionFunction(List.of("a"),root)));
+    RootNode n = parser.generateAst((List.of("greg","(","3",")")));
+    assertEquals(1, n.getChildren().size());
+    assertEquals(new NumberValue(3), n.evaluate(scope));
+  }
 }

@@ -10,7 +10,7 @@ public class Parser {
   private String endSetToken = "}";
   private String startTupleToken = "(";
   private String endTupleToken = ")";
-  private String functionToken = ":";
+  private String functionDefToken = ":";
 
   public RootNode generateAst(List<String> tokens) {
     RootNode root = new RootNode();
@@ -118,6 +118,15 @@ public class Parser {
     }
   }
 
+  private ParsedResult parseFunctionCall(List<String> tokens, int tokensIndex) {
+    String token = tokens.get(tokensIndex);
+    List<String> parsedTokens = new ArrayList<>(List.of(token));
+    tokensIndex++;
+    ParsedResult parameters = parseLiteralCollection(tokens, tokensIndex);
+    parsedTokens.addAll(parameters.tokens);
+    return new ParsedResult(new FunctionCallNode(token, (TupleNode)parameters.node), parsedTokens);
+  }
+
   private ParsedResult parseSymbol(List<String> tokens, int tokensIndex, boolean inMap) {
     String token = tokens.get(tokensIndex);
     ParsedResult symbolResult = new ParsedResult(new SymbolNode(token), List.of(token));
@@ -127,8 +136,10 @@ public class Parser {
     String nextToken = tokens.get(tokensIndex+1);
     if (nextToken.equals(assignmentOperator)) {
       return parseAssignment(tokens, tokensIndex);
-    } else if (nextToken.equals(functionToken)) {
+    } else if (nextToken.equals(functionDefToken)) {
       return parseFunction(tokens, tokensIndex);
+    } else if (nextToken.equals(startTupleToken)) {
+      return parseFunctionCall(tokens, tokensIndex);
     } else {
       return symbolResult;
     }
