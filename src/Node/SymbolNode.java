@@ -7,6 +7,10 @@ public class SymbolNode extends Node {
     this.symbol = symbol;
   }
 
+  public String getSymbol() {
+    return symbol;
+  }
+
   public Value evaluate(Map<String, Value> scope) {
     return scope.getOrDefault(symbol, new NullValue());
   }

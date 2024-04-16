@@ -13,6 +13,10 @@ public class TupleNode extends ListNode {
     nodes.add(n);
   }
 
+  public List<Node> getNodes() {
+    return nodes;
+  }
+
   public Value evaluate(Map<String,Value> scope) {
     List<Value> values = new ArrayList<>();
     for (Node n : nodes) {
