@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Parser {
   // syntax errors
@@ -9,6 +10,7 @@ public class Parser {
   private String endSetToken = "}";
   private String startTupleToken = "(";
   private String endTupleToken = ")";
+  private String functionToken = ":";
 
   public RootNode generateAst(List<String> tokens) {
     RootNode root = new RootNode();
@@ -63,8 +65,8 @@ public class Parser {
     parsedTokens.addAll(pr.tokens);
     return new ParsedResult(new AssignmentNode(token, pr.node), parsedTokens);
   }
-
-  private ParsedResult parseFunction(List<String> tokens, int tokensIndex) {
+  
+  private ParsedResult parseMapFunction(List<String> tokens, int tokensIndex) {
     String token = tokens.get(tokensIndex);
     MapFunction function = new MapFunction();
     List<String> parsedTokens = new ArrayList<>(tokens.subList(tokensIndex, tokensIndex+3));
@@ -82,16 +84,53 @@ public class Parser {
     return new ParsedResult(new FunctionNode(token, function), parsedTokens);
   }
 
+  @SuppressWarnings("unchecked")
+  private ParsedResult parseExpressionFunction(List<String> tokens, int tokensIndex) {
+    String token = tokens.get(tokensIndex);
+    List<String> parsedTokens = new ArrayList<>(tokens.subList(tokensIndex, tokensIndex+2));
+    tokensIndex += 2;
+    ParsedResult parsedParameters = parseLiteralCollection(tokens, tokensIndex);
+    List<String> parameters = ((List<SymbolNode>)(List<?>)(((TupleNode)parsedParameters.node)
+                              .getNodes()))
+                              .stream().map(s->s.getSymbol())
+                              .collect(Collectors.toList()); 
+    parsedTokens.addAll(parsedParameters.tokens);
+    tokensIndex += parsedParameters.tokens.size();
+    parsedTokens.add(tokens.get(tokensIndex));
+    tokensIndex++;
+    RootNode root = new RootNode();
+    while (!tokens.get(tokensIndex).equals(endSetToken)) {
+      ParsedResult expression = parseExpression(tokens, tokensIndex, false);
+      parsedTokens.addAll(expression.tokens);
+      tokensIndex += expression.tokens.size();
+      root.add(expression.node);
+    }
+    parsedTokens.add(tokens.get(tokensIndex));
+    Function function = new ExpressionFunction(parameters, root);
+    return new ParsedResult(new FunctionNode(token, function), parsedTokens);
+  }
+
+  private ParsedResult parseFunction(List<String> tokens, int tokensIndex) {
+    if (tokens.get(tokensIndex+2).equals(startSetToken)) {
+      return parseMapFunction(tokens, tokensIndex);
+    } else {
+      return parseExpressionFunction(tokens, tokensIndex);
+    }
+  }
+
   private ParsedResult parseSymbol(List<String> tokens, int tokensIndex, boolean inMap) {
     String token = tokens.get(tokensIndex);
+    ParsedResult symbolResult = new ParsedResult(new SymbolNode(token), List.of(token));
     if (inMap || tokensIndex+1 >= tokens.size()) {
-      return new ParsedResult(new SymbolNode(token), List.of(token));
+      return symbolResult;
     }
     String nextToken = tokens.get(tokensIndex+1);
     if (nextToken.equals(assignmentOperator)) {
       return parseAssignment(tokens, tokensIndex);
-    } else {
+    } else if (nextToken.equals(functionToken)) {
       return parseFunction(tokens, tokensIndex);
+    } else {
+      return symbolResult;
     }
   }
 

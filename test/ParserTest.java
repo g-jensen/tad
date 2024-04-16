@@ -224,4 +224,44 @@ public class ParserTest {
     assertEquals(new NumberValue(4), f.call(List.of(new NumberValue(2)),scope));
     assertEquals(f, scope.get("b"));
   }
+
+  @Test
+  public void defineEmptyExpressionFunction() {
+    Map<String,Value> scope = new HashMap<>();
+    RootNode n = parser.generateAst((List.of("a",":","(",")","{","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NullValue(), f.call(List.of(),scope));
+    assertEquals(f, scope.get("a"));
+  }
+
+  @Test
+  public void defineConstantExpressionFunction() {
+    Map<String,Value> scope = new HashMap<>();
+    RootNode n = parser.generateAst((List.of("a",":","(",")","{","1","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NumberValue(1), f.call(List.of(),scope));
+    assertEquals(f, scope.get("a"));
+  }
+
+  @Test
+  public void defineConstantExpressionFunctionWithScope() {
+    Map<String,Value> scope = new HashMap<>(Map.of("b",new NumberValue(5)));
+    RootNode n = parser.generateAst((List.of("a",":","(",")","{","b","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NumberValue(5), f.call(List.of(),scope));
+    assertEquals(f, scope.get("a"));
+  }
+
+  @Test
+  public void defineExpressionFunctionWithParameter() {
+    Map<String,Value> scope = new HashMap<>();
+    RootNode n = parser.generateAst((List.of("a",":","(","b",")","{","b","}")));
+    assertEquals(1, n.getChildren().size());
+    Function f = (Function)n.evaluate(scope);
+    assertEquals(new NumberValue(3), f.call(List.of(new NumberValue(3)),scope));
+    assertEquals(f, scope.get("a"));
+  }
 }
