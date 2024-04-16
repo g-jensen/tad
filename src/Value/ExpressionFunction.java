@@ -16,7 +16,12 @@ public class ExpressionFunction implements Function {
     for (int i = 0; i < parameterNames.size(); i++) {
       newScope.put(parameterNames.get(i),parameters.get(i));
     }
-    return root.evaluate(newScope);
+    Value v = root.evaluate(newScope);
+    for (Map.Entry<String,Value> entry: newScope.entrySet()) {
+      if (parameterNames.contains(entry.getKey())) break;
+      scope.put(entry.getKey(),entry.getValue());
+    }
+    return v;
   }
   
 }
