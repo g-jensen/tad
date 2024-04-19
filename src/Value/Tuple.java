@@ -1,7 +1,8 @@
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class Tuple implements Collection {
+public class Tuple implements FiniteCollection {
   private List<Value> values;
 
   public Tuple(List<Value> values) {
@@ -33,6 +34,10 @@ public class Tuple implements Collection {
     }
     sb.append(")");
     return sb.toString();
+  }
+
+  public Collection<Value> getCollection() {
+    return values;
   }
 
 }

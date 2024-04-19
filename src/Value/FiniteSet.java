@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class FiniteSet implements Set {
+public class FiniteSet implements Set, FiniteCollection {
   private java.util.Set<Value> elements;
 
   public FiniteSet(java.util.Set<Value> set) {
@@ -11,10 +12,6 @@ public class FiniteSet implements Set {
 
   public boolean contains(Value v) {
     return elements.contains(v);
-  }
-
-  public java.util.Set<Value> getElements() {
-    return elements;
   }
 
   @Override
@@ -40,5 +37,9 @@ public class FiniteSet implements Set {
     }
     sb.append("}");
     return sb.toString();
+  }
+
+  public Collection<Value> getCollection() {
+    return elements;
   }
 }
