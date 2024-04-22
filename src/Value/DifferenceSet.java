@@ -1,4 +1,4 @@
-public class DifferenceSet implements Set {
+public class DifferenceSet extends InfiniteSet {
   private Collection c1;
   private Collection c2;
 

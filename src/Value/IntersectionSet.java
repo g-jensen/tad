@@ -1,4 +1,4 @@
-public class IntersectionSet implements Set {
+public class IntersectionSet extends InfiniteSet {
   private Collection c1;
   private Collection c2;
 

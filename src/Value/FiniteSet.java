@@ -1,9 +1,11 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-public class FiniteSet implements Set, FiniteCollection {
+public class FiniteSet implements FiniteCollection {
   private java.util.Set<Value> elements;
 
   public FiniteSet(java.util.Set<Value> set) {
@@ -39,7 +41,43 @@ public class FiniteSet implements Set, FiniteCollection {
     return sb.toString();
   }
 
-  public Collection<Value> getCollection() {
+  public java.util.Collection<Value> getCollection() {
     return elements;
+  }
+
+  public Collection backwardsUnion(Collection c) {
+    return c.finiteCollectionUnion(this);
+  }
+
+  public Collection backwardsIntersection(Collection c) {
+    return c.finiteCollectionIntersection(this);
+  }
+
+  public Collection backwardsDifference(Collection c) {
+    return c.finiteCollectionDifference(this);
+  }
+
+  public Collection finiteCollectionUnion(FiniteCollection c) {
+    java.util.Set<Value> l = new HashSet<>(getCollection());
+    l.addAll(c.getCollection()); 
+    return new FiniteSet(l);
+  }
+
+  public Collection finiteCollectionIntersection(FiniteCollection c) {
+    java.util.Set<Value> l = new HashSet<>(getCollection());
+    return new FiniteSet(l.stream().filter(e->c.contains(e)).collect(Collectors.toSet()));
+  }
+
+  public Collection finiteCollectionDifference(FiniteCollection c) {
+    java.util.Set<Value> l = new HashSet<>(getCollection());
+    return new FiniteSet(l.stream().filter(e->!c.contains(e)).collect(Collectors.toSet()));
+  }
+
+  public FiniteCollection map(Function f, Map<String,Value> scope) {
+    java.util.Set<Value> newSet = new HashSet<>();
+    for (Value v : elements) {
+      newSet.add(f.call(List.of(v),scope));
+    }
+    return new FiniteSet(newSet);
   }
 }

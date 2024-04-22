@@ -1,4 +1,4 @@
-public class UnionSet implements Set {
+public class UnionSet extends InfiniteSet {
   private Collection c1;
   private Collection c2;
 

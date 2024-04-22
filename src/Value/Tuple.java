@@ -1,6 +1,8 @@
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Tuple implements FiniteCollection {
   private List<Value> values;
@@ -36,8 +38,42 @@ public class Tuple implements FiniteCollection {
     return sb.toString();
   }
 
-  public Collection<Value> getCollection() {
+  public java.util.Collection<Value> getCollection() {
     return values;
+  }
+
+  public FiniteCollection map(Function f, Map<String,Value> scope) {
+    List<Value> newSet = new ArrayList<>();
+    for (Value v : values) {
+      newSet.add(f.call(List.of(v),scope));
+    }
+    return new Tuple(newSet);
+  }
+
+  public Collection backwardsUnion(Collection c) {
+    return c.finiteCollectionUnion(this);
+  }
+  public Collection backwardsIntersection(Collection c) {
+    return c.finiteCollectionIntersection(this);
+  }
+  public Collection backwardsDifference(Collection c) {
+    return c.finiteCollectionDifference(this);
+  }
+
+  public Collection finiteCollectionUnion(FiniteCollection c) {
+    List<Value> l = new ArrayList<>(getCollection());
+    l.addAll(c.getCollection()); 
+    return new Tuple(l);
+  }
+
+  public Collection finiteCollectionIntersection(FiniteCollection c) {
+    List<Value> l = new ArrayList<>(getCollection());
+    return new Tuple(l.stream().filter(e->c.contains(e)).collect(Collectors.toList()));
+  }
+
+  public Collection finiteCollectionDifference(FiniteCollection c) {
+    List<Value> l = new ArrayList<>(getCollection());
+    return new Tuple(l.stream().filter(e->!c.contains(e)).collect(Collectors.toList()));
   }
 
 }

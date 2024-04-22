@@ -2,13 +2,12 @@
 public interface Collection extends Value {
   public boolean contains(Value v);
 
-  public static Collection union(Set c1, Set c2) {
-    return new UnionSet(c1, c2);
-  }
-  public static Collection intersection(Set c1, Set c2) {
-    return new IntersectionSet(c1, c2);
-  }
-  public static Collection difference(Set c1, Set c2) {
-    return new DifferenceSet(c1, c2);
-  }
+  public Collection backwardsUnion(Collection c);
+  public Collection finiteCollectionUnion(FiniteCollection c);
+  
+  public Collection backwardsIntersection(Collection c);
+  public Collection finiteCollectionIntersection(FiniteCollection c);
+  
+  public Collection backwardsDifference(Collection c);
+  public Collection finiteCollectionDifference(FiniteCollection c);
 }
