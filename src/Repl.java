@@ -13,14 +13,6 @@ public class Repl {
   private Parser parser;
   private Map<String,Value> loadedScope;
 
-  public Repl(InputStream istream, OutputStream ostream, Map<String,Value> scope) {
-    this.scope = scope;
-    this.loadedScope = null;
-    this.reader = new BufferedReader(new InputStreamReader(istream));
-    this.pstream = new PrintStream(ostream);
-    this.parser = new Parser();
-  }
-
   public Repl(InputStream istream, OutputStream ostream, Map<String,Value> scope, Map<String,Value> loadedScope) {
     this.loadedScope = loadedScope;
     this.scope = scope;
@@ -46,7 +38,7 @@ public class Repl {
   }
 
   public void loop() throws IOException {
-    if (loadedScope != null) {
+    if (!loadedScope.isEmpty()) {
       System.out.println("Loaded Debug Scope:");
       System.out.println(loadedScope);
     }

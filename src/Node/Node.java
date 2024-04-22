@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Map;
 
-public abstract class Node {
+public abstract class Node implements Serializable {
   @Override
   public boolean equals(Object obj) {
     if (this == obj) return true;

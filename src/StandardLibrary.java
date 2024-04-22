@@ -95,9 +95,9 @@ public class StandardLibrary {
 
   public static Function quot = new Function() {
     public Value call(List<Value> parameters, Map<String, Value> scope) {
-      int acc = 1;
-      for (Value v: parameters) {
-        acc /= ((NumberValue)v).getNumber();
+      int acc = ((NumberValue)parameters.get(0)).getNumber();
+      for (int i = 1; i < parameters.size(); i++) {
+        acc /= ((NumberValue)parameters.get(i)).getNumber();
       }
       return new NumberValue(acc);
     }
