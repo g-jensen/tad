@@ -11,16 +11,22 @@ public class Repl {
   private PrintStream pstream;
   private Map<String,Value> scope;
   private Parser parser;
+  private Map<String,Value> loadedScope;
 
   public Repl(InputStream istream, OutputStream ostream, Map<String,Value> scope) {
     this.scope = scope;
+    this.loadedScope = null;
     this.reader = new BufferedReader(new InputStreamReader(istream));
     this.pstream = new PrintStream(ostream);
     this.parser = new Parser();
   }
 
   public Repl(InputStream istream, OutputStream ostream, Map<String,Value> scope, Map<String,Value> loadedScope) {
+    this.loadedScope = loadedScope;
     this.scope = scope;
+    for (Map.Entry<String,Value> entry: loadedScope.entrySet()) {
+      scope.put(entry.getKey(),entry.getValue());
+    }
     this.reader = new BufferedReader(new InputStreamReader(istream));
     this.pstream = new PrintStream(ostream);
     this.parser = new Parser();
@@ -40,10 +46,14 @@ public class Repl {
   }
 
   public void loop() throws IOException {
+    if (loadedScope != null) {
+      System.out.println("Loaded Debug Scope:");
+      System.out.println(loadedScope);
+    }
     Value value = evaluate(read());
     while (true) {
-        print(value);
-        value = evaluate(read());
+      print(value);
+      value = evaluate(read());
     }
   }
 
