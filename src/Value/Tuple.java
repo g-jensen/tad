@@ -50,6 +50,16 @@ public class Tuple implements FiniteCollection {
     return new Tuple(newSet);
   }
 
+  public FiniteCollection filter(Function f, Map<String,Value> scope) {
+    List<Value> newSet = new ArrayList<>();
+    for (Value v : values) {
+      if (f.call(List.of(v),scope).equals(new Boolean(true))) {
+        newSet.add(v);
+      }
+    }
+    return new Tuple(newSet);
+  }
+
   public Collection backwardsUnion(Collection c) {
     return c.finiteCollectionUnion(this);
   }

@@ -80,4 +80,14 @@ public class FiniteSet implements FiniteCollection {
     }
     return new FiniteSet(newSet);
   }
+
+  public FiniteCollection filter(Function f, Map<String,Value> scope) {
+    java.util.Set<Value> newSet = new HashSet<>();
+    for (Value v : elements) {
+      if (f.call(List.of(v),scope).equals(new Boolean(true))) {
+        newSet.add(v);
+      }
+    }
+    return new FiniteSet(newSet);
+  }
 }
