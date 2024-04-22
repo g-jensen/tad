@@ -1,4 +1,6 @@
-public interface Value {
+import java.io.Serializable;
+
+public interface Value extends Serializable {
   @Override
   public String toString();
   
