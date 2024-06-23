@@ -1,0 +1,11 @@
+a := 2
+
+even? : (n) {
+  eq(0,mod(n,2))
+}
+
+hello := (1,2,3)
+
+even?(hello)
+
+b := 10

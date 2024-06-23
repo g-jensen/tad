@@ -1,0 +1,18 @@
+inc : (n) {
+  add(1,n)
+}
+
+even? : (n) {
+  eq(0,mod(n,2))
+}
+
+a := (4,8,2,1)
+b := map(inc,a)
+c := filter(even?,a)
+
+println(b)
+println(c)
+
+d := reduce(add,a)
+
+println(d)
